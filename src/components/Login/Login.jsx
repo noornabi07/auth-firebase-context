@@ -7,28 +7,39 @@ const Login = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
 
-    const {signIn} = useContext(UserContext)
+    const { signIn, signInWithGoogle } = useContext(UserContext)
     // console.log(signIn)
 
-    const handleLogin = event =>{
+    const handleLogin = event => {
         event.preventDefault();
         const form = event.target;
         const email = form.email.value;
         const password = form.password.value;
         console.log(email, password);
-        
+
         signIn(email, password)
+            .then(result => {
+                const loggedUser = result.user;
+                console.log(loggedUser)
+                setSuccess('Your account logged successfull');
+                setError('')
+                form.reset()
+
+            })
+            .catch(error => {
+                console.log(error)
+                setError(error.message)
+            })
+    }
+
+    const handleGoogleLogin = () =>{
+        signInWithGoogle()
         .then(result =>{
             const loggedUser = result.user;
             console.log(loggedUser)
-            setSuccess('Your account logged successfull');
-            setError('')
-            form.reset()
-            
         })
         .catch(error =>{
-            console.log(error)
-            setError(error.message)
+            console.log(error.message)
         })
     }
 
@@ -60,10 +71,13 @@ const Login = () => {
                         </div>
                     </form>
                     <Link to="/register">
-                    <button className="btn btn-active btn-link lowercase">Are you new user?</button>
+                        <button className="btn btn-active btn-link lowercase">Are you new user?</button>
                     </Link>
-                </div>
 
+                    <div>
+                        <button onClick={handleGoogleLogin} className="btn btn-primary">Google</button>
+                    </div>
+                </div>
                 <p>{success}</p>
                 <p>{error}</p>
             </div>
